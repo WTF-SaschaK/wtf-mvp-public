@@ -1,0 +1,755 @@
+/* 
+  Best Practice: Tailwind-Direktiven sollten am Anfang der Datei stehen,
+  damit deine eigenen Styles sie bei Bedarf überschreiben können und nicht umgekehrt.
+*/
+@import "tailwindcss";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* Hier beginnt der CSS-Teil (Cascading Style Sheets). CSS ist für das Aussehen und Design der Webseite zuständig. */
+
+/* ':root' ist wie eine globale Box für Variablen. Hier definieren wir unsere Hauptfarben, damit wir sie später leicht wiederverwenden können. */
+:root {
+  --neon-violet: #8b00ff; /* Ein leuchtendes Violett */
+  --neon-blue: #00cfff; /* Ein leuchtendes Blau */
+  --neon-green: #39ff14; /* Ein leuchtendes Grün */
+  --deep-black: #0d0d0d; /* Ein sehr dunkles Grau statt reinem Schwarz für mehr Tiefe */
+  --pure-white: #ffffff; /* Reines Weiß */
+  --shadow-gray: #1a1a1a; /* Ein dunkles Grau für UI-Elemente */
+  --text-gray: #b0b0b0; /* Helleres Grau für besseren Lesekontrast */
+  --premium-gold: #ffd700; /* Gold für Premium-Features */
+
+  /* Neue Variablen für Konsistenz */
+  --border-radius-sm: 0.5rem;
+  --border-radius-md: 1rem;
+  --border-radius-lg: 1.5rem;
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-slow: 0.6s ease-out;
+}
+
+/* 'body' ist der gesamte sichtbare Bereich der Webseite. Hier legen wir die Grundeinstellungen fest. */
+body {
+  font-family: "Nunito", sans-serif; /* Die Standardschriftart für Texte */
+  background-color: var(--deep-black);
+  background-image: radial-gradient(
+      circle at 10% 10%,
+      rgba(139, 0, 255, 0.15),
+      transparent 40%
+    ),
+    radial-gradient(circle at 90% 80%, rgba(0, 207, 255, 0.15), transparent 50%);
+  background-attachment: fixed; /* Hält den Hintergrund beim Scrollen fest */
+  color: var(
+    --text-gray
+  ); /* Standardtextfarbe geändert für bessere Lesbarkeit */
+  overflow-x: hidden; /* Verhindert, dass man seitlich scrollen kann */
+  animation: background-pan 25s linear infinite; /* Sanfte Hintergrundbewegung */
+}
+
+@keyframes background-pan {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+/* Custom Scrollbar für einen polierten Look (funktioniert in Webkit-Browsern wie Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--deep-black);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--neon-violet), var(--neon-blue));
+  border-radius: 10px;
+  border: 2px solid var(--deep-black);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--neon-green), var(--neon-blue));
+}
+
+/* Layout-Struktur für Desktop mit Sidebar */
+.app-layout {
+  display: flex;
+}
+
+.sidebar {
+  width: 240px; /* Feste Breite für die Sidebar */
+  transition: width 0.3s ease;
+}
+
+.main-content {
+  flex-grow: 1; /* Nimmt den restlichen Platz ein */
+  transition: margin-left 0.3s ease;
+}
+
+/* Anpassungen für mobile Geräte */
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+  .sidebar {
+    display: none; /* Sidebar auf Mobilgeräten ausblenden */
+  }
+  .bottom-nav {
+    display: flex; /* Bottom-Nav auf Mobilgeräten einblenden */
+  }
+  main {
+    padding-top: 80px !important; /* Mehr Platz für den Header */
+    padding-bottom: 100px !important; /* Platz für die Bottom-Nav */
+  }
+}
+
+/* 'h1, h2, h3, h4' sind Überschriften. Wir geben allen eine spezielle Schriftart und einen Leuchteffekt. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Poppins", sans-serif;
+  color: var(--pure-white);
+  /* Verfeinerter, mehrschichtiger Leuchteffekt */
+  text-shadow: 0 0 5px rgba(0, 207, 255, 0.2), 0 0 10px rgba(0, 207, 255, 0.2),
+    0 0 20px rgba(139, 0, 255, 0.15), 0 0 35px rgba(139, 0, 255, 0.1);
+}
+
+/* '.page' ist eine "Klasse", die wir unseren verschiedenen Seiten-Containern geben. Standardmäßig sind sie unsichtbar. */
+.page {
+  display: none;
+  animation: fadeIn var(--transition-slow);
+}
+.page.active {
+  display: block;
+}
+
+/* '@keyframes' definieren eine Animation. Diese hier heißt 'fadeIn'. */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 'header' ist die Kopfzeile, die immer oben auf der Seite bleibt. */
+header {
+  background-color: rgba(13, 13, 13, 0.6); /* Halb-durchsichtiger Hintergrund */
+  backdrop-filter: blur(
+    12px
+  ); /* Macht den Inhalt hinter dem Header unscharf (Milchglas-Effekt) */
+  border-bottom: 1px solid rgba(0, 207, 255, 0.2);
+}
+
+/* ================================================================ */
+/* ============ STYLES FÜR DIE FORTSCHRITTSANZEIGE ============= */
+/* ================================================================ */
+#scroll-progress-container {
+  position: absolute; /* Positioniert sich relativ zum Header */
+  top: 0; /* Ganz oben im Header */
+  left: 0;
+  width: 100%;
+  height: 4px; /* Höhe der Leiste */
+  background-color: transparent; /* Der Container selbst ist unsichtbar */
+  z-index: 51; /* Stellt sicher, dass sie über dem Header-Inhalt liegt */
+}
+
+#scroll-progress-bar {
+  height: 100%;
+  width: 0%; /* Startet mit 0% Breite */
+  background: linear-gradient(
+    90deg,
+    var(--neon-violet),
+    var(--neon-blue)
+  ); /* Farbverlauf für den Fülleffekt */
+  box-shadow: 0 0 10px var(--neon-blue); /* Leuchteffekt */
+  transition: width 0.05s linear; /* Sorgt für eine flüssige Animation beim Scrollen */
+}
+
+/* Sidebar- und Bottom-Nav-Styling */
+.sidebar,
+.bottom-nav {
+  background-color: rgba(13, 13, 13, 0.6);
+  backdrop-filter: blur(12px);
+}
+
+.sidebar {
+  border-right: 1px solid rgba(0, 207, 255, 0.2);
+}
+
+.bottom-nav {
+  border-top: 1px solid rgba(0, 207, 255, 0.2);
+}
+
+.nav-link {
+  transition: background-color var(--transition-fast),
+    border-left-color var(--transition-fast), color var(--transition-fast);
+  border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 207, 255, 0.1);
+  border-left-color: var(--neon-blue);
+  color: var(--pure-white);
+}
+
+.nav-link.active {
+  background-color: rgba(0, 207, 255, 0.2);
+  border-left-color: var(--neon-blue);
+  color: var(--pure-white);
+  font-weight: bold;
+}
+
+/* Mobile Nav Link Anpassung */
+.mobile-nav-link {
+  border-left: none;
+  border-top: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+.mobile-nav-link:hover {
+  background-color: rgba(0, 207, 255, 0.1);
+  border-top-color: var(--neon-blue);
+}
+.mobile-nav-link.active {
+  background-color: rgba(0, 207, 255, 0.2);
+  border-top-color: var(--neon-blue);
+}
+
+/* '.card-glow-border' ist der Stil für unsere klickbaren Karten. Verbessertes Design! */
+.card-glow-border {
+  background-color: rgba(26, 26, 26, 0.7);
+  border: 1px solid rgba(0, 207, 255, 0.2);
+  border-radius: 1.5rem; /* Abgerundete Ecken */
+  padding: 1.5rem; /* Innenabstand */
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-glow-border::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    transparent,
+    rgba(0, 207, 255, 0.2),
+    transparent 30%
+  );
+  animation: rotate 6s linear infinite;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.card-glow-border:hover::before {
+  opacity: 1;
+}
+
+.card-glow-border:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 25px rgba(0, 207, 255, 0.3), 0 0 40px rgba(139, 0, 255, 0.2);
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* '.btn-primary-gradient' ist der Stil für unsere Haupt-Buttons. */
+.btn-primary-gradient {
+  font-weight: 700;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  color: var(--pure-white);
+  border: none;
+  background: linear-gradient(90deg, var(--neon-violet), var(--neon-blue));
+  transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(0, 207, 255, 0.4);
+}
+
+.btn-primary-gradient:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 0 25px rgba(0, 207, 255, 0.7);
+}
+
+.btn-primary-gradient:disabled {
+  background: var(--shadow-gray);
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Overlay und Modal-Styling (Pop-up) */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background-color: var(--shadow-gray);
+  border: 1px solid var(--neon-violet);
+  box-shadow: 0 0 30px rgba(139, 0, 255, 0.6);
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+.overlay.visible .modal-content {
+  transform: scale(1);
+}
+
+/* Verbessertes Layout für Artikel/Facts */
+.article-header {
+  position: relative;
+  height: 300px;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: flex-end;
+  padding: 2rem;
+}
+.article-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70%;
+  background: linear-gradient(
+    to top,
+    rgba(13, 13, 13, 1) 20%,
+    rgba(13, 13, 13, 0)
+  );
+}
+.article-header img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+.article-header h2 {
+  position: relative;
+  z-index: 1;
+  font-size: 2.5rem;
+  line-height: 1.2;
+}
+
+.article-body .story-section {
+  background-color: rgba(26, 26, 26, 0.4);
+  border: 1px solid rgba(0, 207, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.article-body .story-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.article-body .story-icon {
+  font-size: 1.5rem;
+}
+.article-body .story-section.wtf-moment {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 0, 255, 0.2),
+    rgba(0, 207, 255, 0.1)
+  );
+  border-color: var(--neon-violet);
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(139, 0, 255, 0.3);
+}
+.article-body .story-section.wtf-fazit {
+  background: linear-gradient(
+    135deg,
+    rgba(57, 255, 20, 0.15),
+    rgba(0, 207, 255, 0.1)
+  );
+  border-color: var(--neon-green);
+}
+
+/* Quiz Styles */
+.quiz-answer-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--neon-blue);
+  background-color: transparent;
+  color: var(--pure-white);
+  text-align: left;
+  transition: all 0.3s ease;
+}
+.quiz-answer-btn:hover:not(:disabled) {
+  background-color: var(--neon-blue);
+  color: var(--deep-black);
+}
+.quiz-answer-btn.correct {
+  background-color: var(--neon-green);
+  border-color: var(--neon-green);
+  color: var(--deep-black);
+  font-weight: bold;
+}
+.quiz-answer-btn.wrong {
+  background-color: #ff2d2d;
+  border-color: #ff2d2d;
+  color: var(--pure-white);
+  opacity: 0.7;
+}
+.quiz-answer-btn:disabled {
+  cursor: not-allowed;
+}
+
+/* BADGE STYLES */
+.badge-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(26, 26, 26, 0.5);
+  border: 1px solid var(--shadow-gray);
+  border-radius: 1rem;
+  aspect-ratio: 1 / 1;
+  transition: all 0.3s ease;
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+.badge-card.unlocked {
+  filter: grayscale(0%);
+  opacity: 1;
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 10px rgba(0, 207, 255, 0.3);
+}
+.badge-card:hover {
+  transform: scale(1.05);
+  border-color: var(--pure-white);
+}
+.badge-card .badge-title {
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 0.5rem;
+  color: var(--pure-white);
+  height: 2.25rem;
+  line-height: 1.125rem;
+  overflow: hidden;
+}
+.badge-card .tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 200px;
+  background-color: var(--deep-black);
+  color: var(--pure-white);
+  text-align: center;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  z-index: 10;
+  transition: opacity 0.3s;
+  font-size: 0.875rem;
+  border: 1px solid var(--neon-blue);
+  box-shadow: 0 0 10px rgba(0, 207, 255, 0.5);
+}
+.badge-card:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Memory Game Styles */
+.memory-card {
+  background-color: var(--shadow-gray);
+  border: 2px solid var(--neon-blue);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.5s, background-color 0.3s;
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.5rem;
+  aspect-ratio: 1 / 1;
+}
+.memory-card .card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.memory-card .card-front {
+  transform: rotateY(180deg);
+}
+.memory-card.is-flipped {
+  transform: rotateY(180deg);
+}
+.memory-card.is-matched {
+  border-color: var(--neon-green);
+  background-color: rgba(57, 255, 20, 0.2);
+  cursor: default;
+}
+
+/* Onboarding Styles */
+.onboarding-step {
+  display: none;
+}
+.onboarding-step.active {
+  display: block;
+}
+.onboarding-avatar-btn {
+  transition: all 0.2s ease-in-out;
+  border: 2px solid transparent;
+}
+.onboarding-avatar-btn.selected {
+  border-color: var(--neon-green);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px var(--neon-green);
+}
+
+/* Optimierter Ladebildschirm & Fortschrittsbalken */
+#loading-overlay {
+  display: flex;
+  flex-direction: column; /* Damit Text und Balken untereinander sind */
+  gap: 1.5rem; /* Abstand zwischen den Elementen */
+}
+
+.progress-bar-container {
+  width: 80%;
+  max-width: 400px;
+  height: 1rem; /* Höhe des Balkens */
+  background-color: rgba(0, 207, 255, 0.1); /* Leicht sichtbarer Hintergrund */
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 207, 255, 0.3);
+  overflow: hidden; /* Stellt sicher, dass der Füllbalken innerhalb der Grenzen bleibt */
+  box-shadow: 0 0 15px rgba(0, 207, 255, 0.2); /* Sanfter äußerer Schein */
+}
+
+.progress-bar-fill {
+  width: 0%; /* Startet bei 0% Breite */
+  height: 100%;
+  background-color: var(--neon-blue);
+  border-radius: 9999px;
+  transition: width 0.1s linear; /* Weicher Übergang bei Breitenänderung */
+  box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue); /* Starker Neon-Glow */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Schimmer-Effekt für den Ladebalken */
+.progress-bar-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+#loading-status-text {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-shadow: 0 0 8px rgba(0, 207, 255, 0.3);
+}
+
+/* XP-BALKEN STYLES */
+.profile-xp-bar-container {
+  background-color: rgba(26, 26, 26, 0.7);
+  border: 1px solid rgba(0, 207, 255, 0.2);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-xp-level-badge {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--neon-violet), var(--neon-blue));
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--pure-white);
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  box-shadow: 0 0 15px rgba(0, 207, 255, 0.5);
+  border: 2px solid var(--pure-white);
+}
+
+.profile-xp-level-badge .level-text {
+  font-size: 0.7rem;
+  line-height: 1;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.profile-xp-level-badge .level-number {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.profile-xp-bar-wrapper {
+  width: 100%;
+}
+
+.profile-xp-bar-background {
+  background-color: var(--deep-black);
+  border-radius: 9999px;
+  height: 24px;
+  padding: 4px;
+  border: 1px solid rgba(0, 207, 255, 0.3);
+}
+
+#profile-xp-bar {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+  transition: width 0.5s ease-in-out;
+  box-shadow: 0 0 10px var(--neon-blue), 0 0 5px var(--neon-green);
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 10px var(--neon-blue), 0 0 5px var(--neon-green);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--neon-blue), 0 0 10px var(--neon-green);
+  }
+  100% {
+    box-shadow: 0 0 10px var(--neon-blue), 0 0 5px var(--neon-green);
+  }
+}
+
+#profile-xp-text {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--text-gray);
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+/* NEUE STYLES FÜR PROFIL IN SIDEBAR */
+.sidebar-profile-card {
+  background-color: rgba(0, 207, 255, 0.1);
+  border: 1px solid rgba(0, 207, 255, 0.2);
+  border-radius: 1rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.sidebar-profile-card:hover {
+  background-color: rgba(0, 207, 255, 0.2);
+  border-color: var(--neon-blue);
+  transform: scale(1.03);
+}
+#sidebar-xp-bar-container {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 9999px;
+  height: 8px;
+  overflow: hidden;
+}
+#sidebar-xp-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
+  border-radius: 9999px;
+  transition: width 0.5s ease-in-out;
+}
+
+/* PREMIUM STYLES */
+.premium-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--premium-gold);
+  color: var(--deep-black);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  box-shadow: 0 0 10px var(--premium-gold);
+}
+
+.card-glow-border.premium-locked {
+  filter: grayscale(80%);
+  opacity: 0.7;
+}
+
+.btn-premium {
+  background: linear-gradient(90deg, #ffd700, #f0b90b);
+  color: var(--deep-black);
+  font-weight: bold;
+  box-shadow: 0 0 15px #ffd700;
+}
+
+.btn-premium:hover {
+  box-shadow: 0 0 25px #ffd700;
+  transform: scale(1.05);
+}
+@import "tailwindcss";
